@@ -24,10 +24,27 @@ map <F5> -:let code = "r!perl " . bufname("%")<CR> <F6>gg0<ESC>:exe code<CR>
 "- saves
 map - :up<CR>
 
+"" Filetype Specific Mappings
+" Show help for current word when F4 is pressed
+autocmd FileType python map <F4> :execute 'let cw=expand("<cword>")' \| vnew \| execute "r!pydoc " cw<CR>
+autocmd FileType python imap <F4> <ESC><F4>
+let python_highlight_all = 1
+
+" F4 for function help
+autocmd FileType perl map <F4> :execute 'let cw=expand("<cword>")' \| vnew \| execute "r!perldoc -f" cw<CR>
+autocmd FileType perl imap <F4> <ESC><F4>
+" C-F4 for keyword based help
+autocmd FileType perl map <C-F4> :execute 'let cw=expand("<cword>")' \| vnew \| execute "r!perldoc -q" cw<CR>
+autocmd FileType perl imap <C-F4> <ESC><C-F4>
+
 "Switch 0 and ^ since we most often want to go to start of text rather than 
 "line itself, and 0 is much easier to type
 nnoremap 0 ^
 nnoremap ^ 0
+
+" Use space for opening and closing folds
+nnoremap <space> za
+vnoremap <space> zf
 
 "" Insert Mode Mappings
 "Make F2 save insert mode, and take me back to insert mode
@@ -42,6 +59,8 @@ imap <C-j> <Down>
 imap <C-k> <Up>
 imap <C-h> <Left>
 imap <C-l> <Right>
+
+""" End of MAPPINGS
 
 " Avoid creating temporary files in source directories
 if ! isdirectory(expand('~/vimtmp'))
@@ -95,22 +114,8 @@ set showmatch
 " cut or copy some text from one window and paste it in Vim. 
 set pastetoggle=<F11>
 
-" Use space for opening and closing folds
-nnoremap <space> za
-vnoremap <space> zf
-
 " When tab completion has multiple completions, complete upto longest common prefix and show options
 set wildmode=list:longest
-
-" Show help for current word when F4 is pressed
-autocmd FileType python map <F4> :execute 'let cw=expand("<cword>")' \| vnew \| execute "r!pydoc " cw<CR>
-autocmd FileType python imap <F4> <ESC><F4>
-let python_highlight_all = 1
-
-autocmd FileType perl map <F4> :execute 'let cw=expand("<cword>")' \| vnew \| execute "r!perldoc -f" cw<CR>
-autocmd FileType perl imap <F4> <ESC><F4>
-autocmd FileType perl map <C-F4> :execute 'let cw=expand("<cword>")' \| vnew \| execute "r!perldoc -q" cw<CR>
-autocmd FileType perl imap <C-F4> <ESC><C-F4>
 
 " Set foreground and background colors of folded lines to be less irritating
 highlight Folded ctermfg=DarkMagenta
@@ -120,11 +125,11 @@ if has('gui_running')
     highlight Folded guibg=White
 endif
 
-"set guifont=LucidaSansTypLat5\ 12
 set guifont=Bitstream\ Vera\ Sans\ Mono\ 13
 
 " Ignore case generally, but do it case sensitively if I type capital letters
 set ignorecase smartcase
 
+" A color scheme that suits me - dark backgrounded with ordinary text green
 colorscheme murphy
 
