@@ -43,7 +43,6 @@ filetype plugin indent on
 let perl_include_pod   = 1    "include pod.vim syntax file with perl.vim
 let perl_extended_vars = 1    "highlight complex expressions such as @{[$x, $y]}
 let perl_sync_dist     = 250  "use more context for highlighting
-"let g:Perl_MapLeader = ';'    "Change from \ for easier access
 
 """ MAPPINGS
 "" Normal Mode Mappings
@@ -81,10 +80,6 @@ let python_highlight_all = 1
 "line itself, and 0 is much easier to type
 nnoremap 0 ^
 nnoremap ^ 0
-
-" Use space for opening and closing folds
-"nnoremap <space> za
-"vnoremap <space> zf
 
 "" Insert Mode Mappings
 "Make F2 save insert mode, and take me back to insert mode
@@ -146,20 +141,12 @@ set history=100
 "Automatically chdir to the directory of the current file
 set autochdir
 
-" Make sure vim searches all the upper directories for the tags file.
-" See: http://www.vim.org/tips/tip.php?tip_id=94
-" [Project-specific settings removed for privacy reasons]
-
-"Enables many plugins
-filetype plugin on
-
 " Show matching brackets
 set showmatch
 
 " paste mode - this will avoid unexpected effects (unnecessary indentation) when you
 " cut or copy some text from one window and paste it in Vim. 
 set pastetoggle=<F11>
-
 
 " For perl6 syntax highlighting 
 autocmd BufNewFile,BufRead *.pl6 set filetype=perl6
@@ -177,19 +164,14 @@ highlight Folded ctermbg=White
 if has('gui_running')
     highlight Folded guifg=DarkMagenta
     highlight Folded guibg=White
+    set guifont=Consolas:h13:cANSI
 endif
-
-"set guifont=Bitstream\ Vera\ Sans\ Mono\ 13
-set guifont=Consolas:h13:cANSI
 
 " Ignore case generally, but do it case sensitively if I type capital letters
 set ignorecase smartcase
 
 " A color scheme that suits me - dark backgrounded with ordinary text green
 colorscheme murphy
-
-" Provide % navigation for <> also 
-" set matchpairs+=<:>
 
 autocmd BufNewFile,BufRead *.json set ft=json
 
@@ -198,18 +180,14 @@ augroup json_autocmd
     autocmd FileType json set autoindent
     autocmd FileType json set formatoptions=tcq2l
     autocmd FileType json set textwidth=78
-    "autocmd FileType json set shiftwidth=2
-    "autocmd FileType json set softtabstop=2 tabstop=8
-    "autocmd FileType json set expandtab
-    "autocmd FileType json set foldmethod=syntax
 augroup END
 
 "When I switch buffers just hide the old buffer, don't lose its undo history
 set hidden 
-" When switching buffers, preserve window view.
+
+"When switching buffers, preserve window view.
 if v:version >= 700
   au BufLeave * if !&diff | let b:winview = winsaveview() | endif
   au BufEnter * if exists('b:winview') && !&diff | call winrestview(b:winview) | endif
 endif
-
 
