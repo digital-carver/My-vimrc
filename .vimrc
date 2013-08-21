@@ -63,10 +63,6 @@ imap <F6> <ESC><F6>
 map <C-Tab> :bn<CR>
 map <C-S-Tab> :bp<CR>
 
-"F11 for fullscreen
-nnoremap <F11> <ESC>:call libcallnr("gvimfullscreen.dll", "ToggleFullScreen", 0)<CR> 
-inoremap <F11> <ESC>:call libcallnr("gvimfullscreen.dll", "ToggleFullScreen", 0)<CR> 
-
 "- saves
 map - :up<CR>
 
