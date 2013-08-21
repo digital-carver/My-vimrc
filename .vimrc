@@ -3,6 +3,28 @@
 "Don't act like old guy vi, give me the features of vim
 set nocp
 
+let vundle_readme=expand('~/.vim/bundle/vundle/README.md')
+if filereadable(vundle_readme)
+    filetype off                   " required!
+
+    set rtp+=C:\Users\Sundar\vimfiles/bundle/vundle/
+    call vundle#rc()
+
+    " let Vundle manage Vundle
+    " required! 
+    Bundle 'gmarik/vundle'
+
+    Bundle 'vim-scripts/perl-support.vim'
+    Bundle 'vim-scripts/compview.git'
+    "Bundle 'c9s/perlomni.vim' Doesn't work on Windows, needs piping and some Unix commands
+    Bundle 'perl_search_lib'
+    Bundle 'tpope/vim-surround.git'
+    Bundle 'tpope/vim-repeat.git'
+    Bundle 'matchit.zip'
+    Bundle 'godlygeek/tabular'
+    Bundle 'mattn/zencoding-vim'
+endif
+
 if !has("gui_running")
     "For colors
     set term=xtermc
@@ -11,15 +33,40 @@ endif
 "Syntax highlighting
 syntax on
 
+"search for tags in current dir, then upwards
+set tags=./tags;/,tags;/
+
+set autoindent
 "Indent automatically according to filetype
-filetype indent on
+filetype plugin indent on
+
+let perl_include_pod   = 1    "include pod.vim syntax file with perl.vim
+let perl_extended_vars = 1    "highlight complex expressions such as @{[$x, $y]}
+let perl_sync_dist     = 250  "use more context for highlighting
+"let g:Perl_MapLeader = ';'    "Change from \ for easier access
 
 """ MAPPINGS
 "" Normal Mode Mappings
+
+nnoremap <Leader>pm :call PerlModuleUnderCursor()<CR>
+
+function! PerlModuleUnderCursor()
+  execute 'e `perldoc -lm ' . expand("<cWORD>") . '`'
+endfunction
+let g:Perl_PerlTags = 'on' "Supposed to do the same as above with Ctrl-] if Perl::Tags installed
+
 "F6 switches windows
 map <F6> <C-W>p
-"F5 runs code and shows output in the other window
-map <F5> -:let code = "r!perl " . bufname("%")<CR> <F6>gg0<ESC>:exe code<CR>
+"Make F6 work in insert mode too
+imap <F6> <ESC><F6>
+
+"Ctrl Tab and Ctrl Shift Tab for buffer switching
+map <C-Tab> :bn<CR>
+map <C-S-Tab> :bp<CR>
+
+"F11 for fullscreen
+nnoremap <F11> <ESC>:call libcallnr("gvimfullscreen.dll", "ToggleFullScreen", 0)<CR> 
+inoremap <F11> <ESC>:call libcallnr("gvimfullscreen.dll", "ToggleFullScreen", 0)<CR> 
 
 "- saves
 map - :up<CR>
@@ -30,29 +77,18 @@ autocmd FileType python map <F4> :execute 'let cw=expand("<cword>")' \| vnew \| 
 autocmd FileType python imap <F4> <ESC><F4>
 let python_highlight_all = 1
 
-" F4 for function help
-autocmd FileType perl map <F4> :execute 'let cw=expand("<cword>")' \| vnew \| execute "r!perldoc -f" cw<CR>
-autocmd FileType perl imap <F4> <ESC><F4>
-" C-F4 for keyword based help
-autocmd FileType perl map <C-F4> :execute 'let cw=expand("<cword>")' \| vnew \| execute "r!perldoc -q" cw<CR>
-autocmd FileType perl imap <C-F4> <ESC><C-F4>
-
 "Switch 0 and ^ since we most often want to go to start of text rather than 
 "line itself, and 0 is much easier to type
 nnoremap 0 ^
 nnoremap ^ 0
 
 " Use space for opening and closing folds
-nnoremap <space> za
-vnoremap <space> zf
+"nnoremap <space> za
+"vnoremap <space> zf
 
 "" Insert Mode Mappings
 "Make F2 save insert mode, and take me back to insert mode
 imap <F2> <ESC>-a
-
-"Make F5 and F6 work in insert mode too
-imap <F6> <ESC><F6>
-imap <F5> <ESC><F5>
 
 "Control-<navigation character> to move in insert mode
 imap <C-j> <Down>
@@ -60,16 +96,26 @@ imap <C-k> <Up>
 imap <C-h> <Left>
 imap <C-l> <Right>
 
+"Ctrl space for omni-complete
+inoremap <C-Space> <C-x><C-o>
+inoremap <C-@> <C-Space>
+
+vmap aa :Align=<CR>
+
 """ End of MAPPINGS
 
+"Enable omnicomplete
+set omnifunc=syntaxcomplete#Complete
+
 " Avoid creating temporary files in source directories
-if ! isdirectory(expand('~/vimtmp'))
-    call mkdir(expand('~/vimtmp'))
+if ! isdirectory($HOME . "/vimtmp")
+    call mkdir($HOME . "/vimtmp")
 endif
-if isdirectory(expand('~/vimtmp'))
-    set directory=~/vimtmp,~/tmp
+
+if isdirectory($HOME . "/vimtmp")
+    set directory=$HOME/vimtmp//,$HOME/tmp//,$TEMP//
 else
-    set directory=~/tmp,/var/tmp,/tmp,.
+    set directory=$HOME/tmp//,$TEMP//,.
 endif
 
 "Line numbers
@@ -102,7 +148,7 @@ set autochdir
 
 " Make sure vim searches all the upper directories for the tags file.
 " See: http://www.vim.org/tips/tip.php?tip_id=94
-" [Project-specific settings removed for privacy (and confidentiality?)]
+" [Project-specific settings removed for privacy reasons]
 
 "Enables many plugins
 filetype plugin on
@@ -114,8 +160,16 @@ set showmatch
 " cut or copy some text from one window and paste it in Vim. 
 set pastetoggle=<F11>
 
+
+" For perl6 syntax highlighting 
+autocmd BufNewFile,BufRead *.pl6 set filetype=perl6
+autocmd FileType perl6 set syntax=perl6
+
 " When tab completion has multiple completions, complete upto longest common prefix and show options
 set wildmode=list:longest
+
+" Modelines (vim: ex: etc) have security concerns, disable them by default
+set nomodeline
 
 " Set foreground and background colors of folded lines to be less irritating
 highlight Folded ctermfg=DarkMagenta
@@ -125,11 +179,37 @@ if has('gui_running')
     highlight Folded guibg=White
 endif
 
-set guifont=Bitstream\ Vera\ Sans\ Mono\ 13
+"set guifont=Bitstream\ Vera\ Sans\ Mono\ 13
+set guifont=Consolas:h13:cANSI
 
 " Ignore case generally, but do it case sensitively if I type capital letters
 set ignorecase smartcase
 
 " A color scheme that suits me - dark backgrounded with ordinary text green
 colorscheme murphy
+
+" Provide % navigation for <> also 
+" set matchpairs+=<:>
+
+autocmd BufNewFile,BufRead *.json set ft=json
+
+augroup json_autocmd
+    autocmd!
+    autocmd FileType json set autoindent
+    autocmd FileType json set formatoptions=tcq2l
+    autocmd FileType json set textwidth=78
+    "autocmd FileType json set shiftwidth=2
+    "autocmd FileType json set softtabstop=2 tabstop=8
+    "autocmd FileType json set expandtab
+    "autocmd FileType json set foldmethod=syntax
+augroup END
+
+"When I switch buffers just hide the old buffer, don't lose its undo history
+set hidden 
+" When switching buffers, preserve window view.
+if v:version >= 700
+  au BufLeave * if !&diff | let b:winview = winsaveview() | endif
+  au BufEnter * if exists('b:winview') && !&diff | call winrestview(b:winview) | endif
+endif
+
 
