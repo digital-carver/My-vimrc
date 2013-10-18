@@ -19,6 +19,10 @@ set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=ucs-bom,utf8
 
+"Backups are not in your job description, thankyouverymuch
+set nobackup
+set nowritebackup
+
 "Enable omnicomplete
 set omnifunc=syntaxcomplete#Complete
 
@@ -27,7 +31,7 @@ if filereadable(vundle_readme)
     let iCanHazVundle=1
 
     filetype off                   " required!
-    set rtp+=C:/Users/Sundar/vimfiles/bundle/vundle/
+    set rtp+=~/.vim/bundle/vundle/
     call vundle#rc()
 
     " let Vundle manage Vundle
@@ -35,7 +39,9 @@ if filereadable(vundle_readme)
     Bundle 'gmarik/vundle'
 
     "perlomni doesn't work perfectly on Windows, needs piping and some Unix commands
-    "Bundle 'c9s/perlomni.vim'
+    if has('unix')
+        Bundle 'c9s/perlomni.vim'
+    endif
     Bundle 'tpope/vim-surround.git'
     Bundle 'tpope/vim-repeat.git'
     Bundle 'vim-scripts/matchit.zip'
@@ -50,12 +56,7 @@ if filereadable(vundle_readme)
 
     Bundle 'perl_search_lib'
     Bundle 'perl-support.vim'
-    Bundle 'compview.git'
-endif
-
-if !has("gui_running")
-    "For colors
-    set term=xtermc
+    Bundle 'compview'
 endif
 
 "Syntax highlighting
@@ -231,7 +232,11 @@ highlight Folded ctermbg=White
 if has('gui_running')
     highlight Folded guifg=DarkMagenta
     highlight Folded guibg=White
-    set guifont=Consolas:h13:cANSI
+    if has('gui_win32')
+        set guifont=Consolas:h13:cANSI
+    elseif has('gui_gtk2')
+        set guifont=Dejavu\ Sans\ Mono\ 11
+    endif
 endif
 
 " Ignore case generally, but do it case sensitively if I type capital letters
